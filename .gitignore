@@ -1,0 +1,5 @@
+*.so
+*.vcd
+*obj_dir/
+*.gtkw
+*.swp
