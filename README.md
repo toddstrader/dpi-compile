@@ -58,3 +58,9 @@ make run
 ```
 
 You may need to set `VERILATOR_ROOT` depending on your Verilator installation method.
+
+## See also
+
+There's been some discussion of this project here:
+https://www.veripool.org/boards/3/topics/3037?r=3042#message-3042
+
