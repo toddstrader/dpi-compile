@@ -3,3 +3,14 @@
 *obj_dir/
 *.gtkw
 *.swp
+.Xil/
+xsim.*
+xelab.*
+xvlog.*
+*.jou
+*.log
+vivado.*str
+*.o
+*.d
+work.*wdb
+vivado_*str

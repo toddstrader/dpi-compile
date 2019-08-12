@@ -10,7 +10,7 @@
 
 module foo (
     input [31:0] a,
-    output [31:0] x,
+    output logic [31:0] x,
     input clk
 );
 
@@ -20,9 +20,10 @@ module foo (
     import "DPI-C" function void final_foo (chandle foo);
 
     chandle foo;
+    string scope;
 
     initial begin
-        string scope = $sformatf("%m");
+        scope = $sformatf("%m");
         foo = create_foo(scope);
     end
 
