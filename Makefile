@@ -32,7 +32,7 @@ tb_obj_dir/Vfoo_tb__Dpi.h: foo_tb.sv foo.sv tb.cpp
 xsim: libfoo.so
 	xvlog --sv foo_tb.sv foo.sv
 	xelab foo_tb --debug all --sv_lib libfoo --dpi_absolute
-	xsim --runall work.foo_tb
+	xsim work.foo_tb -t xsim.tcl
 
 run:
 	LD_LIBRARY_PATH=${PWD} tb_obj_dir/Vfoo_tb

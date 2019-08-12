@@ -4,11 +4,10 @@
 *.gtkw
 *.swp
 .Xil/
-xsim.*
-xelab.*
-xvlog.*
 *.jou
 *.log
+*.dir/
+*.pb
 vivado.*str
 *.o
 *.d
