@@ -44,10 +44,10 @@ clean:
 	rm -f *.o
 	rm -f *.d
 	rm -f *.vcd
+	rm -f *.jou
+	rm -f *.log
+	rm -f *.pb
 	rm -rf xsim.dir
-	rm -f xvlog.*
-	rm -f xelab.*
-	rm -f xsim.*
 	rm -f webtalk.*
 	rm -f vivado_*str
 	rm -f work.*wdb

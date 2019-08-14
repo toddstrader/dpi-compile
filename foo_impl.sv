@@ -9,7 +9,7 @@ module foo_impl (
 );
 
     logic [31:0] accum_q = 0;
-    logic [31:0] next_accum = accum_q + a + 1'b1;
+    wire [31:0] next_accum = accum_q + a + 1'b1;
 
     always_ff @(posedge(clk)) begin
         accum_q <= next_accum;
