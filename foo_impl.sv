@@ -3,13 +3,13 @@
 // Super top-secret code
 
 module foo_impl (
-    input [31:0] a,
-    output [31:0] x,
+    input [63:0] a,
+    output [63:0] x,
     input clk
 );
 
-    logic [31:0] accum_q = 0;
-    wire [31:0] next_accum = accum_q + a + 1'b1;
+    logic [63:0] accum_q = 0;
+    wire [63:0] next_accum = accum_q + a + 1'b1;
 
     always_ff @(posedge(clk)) begin
         accum_q <= next_accum;

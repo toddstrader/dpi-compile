@@ -18,12 +18,12 @@ void* create_foo (const char* scope) {
 
 void eval_foo (
     void* fooPtr,
-    int a,
+    const svBitVecVal* a,
     unsigned char clk,
-    int* x)
+    svBitVecVal* x)
 {
     Vfoo_impl* foo = static_cast<Vfoo_impl*>(fooPtr);
-    foo->a = a;
+    foo->a = *a;
     foo->clk = clk;
     foo->eval();
     *x = foo->x;

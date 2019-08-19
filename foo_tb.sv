@@ -3,12 +3,12 @@
 // Example testbench module
 
 module foo_tb (
-    input [31:0] a0, a1,
-    output [31:0] x0, x1,
+    input [63:0] a0, a1,
+    output [63:0] x0, x1,
     input clk
 );
 
-    logic [1:0] [31:0] a, x;
+    logic [1:0] [63:0] a, x;
     assign a[0] = a0;
     assign a[1] = a1;
     assign x0 = x[0];

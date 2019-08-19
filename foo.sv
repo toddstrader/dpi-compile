@@ -9,14 +9,14 @@
 //   generated from foo_impl.sv
 
 module foo (
-    input [31:0] a,
-    output logic [31:0] x,
+    input [63:0] a,
+    output logic [63:0] x,
     input clk
 );
 
     import "DPI-C" function chandle create_foo (string scope);
     import "DPI-C" function void eval_foo (
-            chandle foo, int a, bit clk, output int x);
+            chandle foo, bit [63:0] a, bit clk, output bit [63:0] x);
     import "DPI-C" function void final_foo (chandle foo);
 
     chandle foo;
