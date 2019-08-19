@@ -64,3 +64,5 @@ You may need to set `VERILATOR_ROOT` depending on your Verilator installation me
 There's been some discussion of this project here:
 https://www.veripool.org/boards/3/topics/3037?r=3042#message-3042
 
+## TODO
+- [ ] Handle C++ ABI differences (maybe build multiple libraries?)
