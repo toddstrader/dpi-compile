@@ -11,12 +11,20 @@
 module foo (
     input [63:0] a,
     output logic [63:0] x,
+    input [128:0] long_in,
+    output logic [128:0] long_out,
     input clk
 );
 
     import "DPI-C" function chandle create_foo (string scope);
     import "DPI-C" function void eval_foo (
-            chandle foo, bit [63:0] a, bit clk, output bit [63:0] x);
+            chandle foo,
+            bit [63:0] a,
+            bit clk,
+            bit [128:0] long_in,
+            output bit [128:0] long_out,
+            output bit [63:0] x
+    );
     import "DPI-C" function void final_foo (chandle foo);
 
     chandle foo;
@@ -29,7 +37,7 @@ module foo (
 
     always @(*) begin
         // TODO -- try to understand clocks and be smarter here
-        eval_foo(foo, a, clk, x);
+        eval_foo(foo, a, clk, long_in, long_out, x);
     end
 
     final final_foo(foo);

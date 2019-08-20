@@ -5,6 +5,8 @@
 module foo_impl (
     input [63:0] a,
     output [63:0] x,
+    input [128:0] long_in,
+    output [128:0] long_out,
     input clk
 );
 
@@ -17,6 +19,7 @@ module foo_impl (
     end
 
     assign x = accum_q;
+    assign long_out = ~long_in;
 
     initial $display("Starting up: %m");
     final $display("All done: %m");
