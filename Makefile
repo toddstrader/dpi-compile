@@ -7,6 +7,11 @@ default: tb_obj_dir/Vfoo_tb
 tb_obj_dir/Vfoo_tb: libfoo.so
 	make -C tb_obj_dir/ -f Vfoo_tb.mk VM_USER_LDLIBS="-L ${PWD} -lfoo"
 
+ifdef VLT_PROT
+dpi_prot_obj_dir/foo.cpp: foo_impl.sv
+	${VERILATOR_ROOT}/bin/verilator --cc foo_impl.sv -Mdir dpi_prot_obj_dir --dpi-protect --prefix foo
+else
+
 VERILATOR_C_FLAGS= -I.  -MMD -I${VERILATOR_ROOT}/include -I${VERILATOR_ROOT}/include/vltstd -DVL_PRINTF=printf -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=1 -faligned-new -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow -fPIC
 
 verilated.o: ${VERILATOR_ROOT}/include/verilated.cpp
@@ -26,6 +31,7 @@ libfoo.so: foo_impl.sv foo.cpp tb_obj_dir/Vfoo_tb__Dpi.h verilated.o verilated_d
 
 tb_obj_dir/Vfoo_tb__Dpi.h: foo_tb.sv foo.sv tb.cpp
 	${VERILATOR_ROOT}/bin/verilator --trace --exe foo_tb.sv foo.sv --top-module foo_tb --Mdir tb_obj_dir tb.cpp --cc
+endif
 
 .PHONY: clean run xsim
 
@@ -38,8 +44,7 @@ run:
 	LD_LIBRARY_PATH=${PWD} tb_obj_dir/Vfoo_tb
 
 clean:
-	rm -rf obj_dir
-	rm -rf tb_obj_dir
+	rm -rf *obj_dir
 	rm -f *.so
 	rm -f *.o
 	rm -f *.d
