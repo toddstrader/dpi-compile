@@ -4,9 +4,6 @@
 
 default: tb_obj_dir/Vfoo_tb
 
-tb_obj_dir/Vfoo_tb: libfoo.so
-	make -C tb_obj_dir/ -f Vfoo_tb.mk VM_USER_LDLIBS="-L ${PWD} -lfoo"
-
 ifdef VLT_PROT
 dpi_prot_obj_dir/foo.cpp: foo_impl.sv
 	${VERILATOR_ROOT}/bin/verilator --cc foo_impl.sv -Mdir dpi_prot_obj_dir --dpi-protect foo
@@ -16,8 +13,10 @@ dpi_hdr_obj_dir/Vfoo__Dpi.h: dpi_prot_obj_dir/foo.cpp
 	${VERILATOR_ROOT}/bin/verilator --cc dpi_prot_obj_dir/foo.sv -Mdir dpi_hdr_obj_dir
 
 # TODO -- get rid of CXXFLAGS here
-libfoo.so: dpi_hdr_obj_dir/Vfoo__Dpi.h
-	make -C dpi_prot_obj_dir/ -f Vfoo.mk CXXFLAGS="-I dpi_hdr_obj_dir"
+dpi_prot_obj_dir/libfoo.so: dpi_hdr_obj_dir/Vfoo__Dpi.h
+	make -C dpi_prot_obj_dir/ -f Vfoo_impl.mk CXXFLAGS="-I../dpi_hdr_obj_dir"
+
+LIB_DIR=dpi_prot_obj_dir/
 else
 
 VERILATOR_C_FLAGS= -I.  -MMD -I${VERILATOR_ROOT}/include -I${VERILATOR_ROOT}/include/vltstd -DVL_PRINTF=printf -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=1 -faligned-new -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow -fPIC
@@ -32,14 +31,19 @@ verilated_dpi.o: ${VERILATOR_ROOT}/include/verilated_dpi.cpp
 verilated_vcd_c.o: ${VERILATOR_ROOT}/include/verilated_vcd_c.cpp
 	${CXX} ${VERILATOR_C_FLAGS} -c -o $@ $<
 
-libfoo.so: foo_impl.sv foo.cpp tb_obj_dir/Vfoo_tb__Dpi.h verilated.o verilated_dpi.o verilated_vcd_c.o
+libfoo.so: foo_impl.sv foo.cpp tb_obj_dir/Vfoo_tb.mk verilated.o verilated_dpi.o verilated_vcd_c.o
 	${VERILATOR_ROOT}/bin/verilator --trace --cc foo_impl.sv -CFLAGS '-fPIC'
 	make -C obj_dir/ -f Vfoo_impl.mk
 	g++ -fPIC -shared foo.cpp -I tb_obj_dir/ -I obj_dir/ -I ${VERILATOR_ROOT}/include/ -I ${VERILATOR_ROOT}/include/vltstd/ obj_dir/Vfoo_impl__ALL.a -o libfoo.so verilated.o verilated_dpi.o verilated_vcd_c.o
 
-tb_obj_dir/Vfoo_tb__Dpi.h: foo_tb.sv foo.sv tb.cpp
-	${VERILATOR_ROOT}/bin/verilator --trace --exe foo_tb.sv foo.sv --top-module foo_tb --Mdir tb_obj_dir tb.cpp --cc
+LIB_DIR=
 endif
+
+tb_obj_dir/Vfoo_tb.mk: ${LIB_DIR}foo.sv foo_tb.sv tb.cpp
+	${VERILATOR_ROOT}/bin/verilator --trace --exe $^ --top-module foo_tb --Mdir tb_obj_dir --cc
+
+tb_obj_dir/Vfoo_tb: ${LIB_DIR}libfoo.so tb_obj_dir/Vfoo_tb.mk
+	make -C tb_obj_dir/ -f Vfoo_tb.mk VM_USER_LDLIBS="-L ${PWD}/${LIB_DIR} -lfoo"
 
 .PHONY: clean run xsim
 

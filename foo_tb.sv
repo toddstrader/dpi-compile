@@ -9,7 +9,7 @@ module foo_tb (
 );
 
     logic [1:0] [63:0] a, x;
-    logic [128:0] long_in, long_out;
+    logic [128:0] long_in;
 
     assign a[0] = a0;
     assign a[1] = a1;
@@ -20,7 +20,7 @@ module foo_tb (
     genvar i;
     generate
         for (i = 0; i < 2; i = i + 1) begin: gen_loop
-            foo foo_inst (.a (a[i]), .x (x[i]), .long_in, .long_out, .clk (clk));
+            foo foo_inst (.a (a[i]), .x (x[i]), .long_in, .long_out (), .clk (clk));
         end
     endgenerate
 
