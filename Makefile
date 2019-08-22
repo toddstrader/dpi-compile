@@ -56,7 +56,7 @@ xsim: libfoo.so
 	xsim work.foo_tb -t xsim.tcl
 
 run:
-	LD_LIBRARY_PATH=${PWD} ${TB_OBJ_DIR}/Vfoo_tb
+	LD_LIBRARY_PATH=${PWD}/${LIB_DIR} ${TB_OBJ_DIR}/Vfoo_tb
 
 clean:
 	rm -rf *obj_dir
