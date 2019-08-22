@@ -50,8 +50,8 @@ ${TB_OBJ_DIR}/Vfoo_tb: ${LIB_DIR}libfoo.so ${TB_OBJ_DIR}/Vfoo_tb.mk
 
 .PHONY: clean run xsim
 
-xsim: libfoo.so
-	xvlog --sv foo_tb.sv foo.sv
+xsim: ${LIB_DIR}libfoo.so
+	xvlog --sv foo_tb.sv ${LIB_DIR}foo.sv
 	xelab foo_tb --debug all --sv_lib ${LIB_DIR}libfoo --dpi_absolute
 	xsim work.foo_tb -t xsim.tcl
 
