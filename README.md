@@ -59,6 +59,29 @@ make run
 
 You may need to set `VERILATOR_ROOT` depending on your Verilator installation method.
 
+The code can also be tested against the Xilinx XSim simulator:
+
+```
+make xsim
+```
+
+And since this codebase is meant to demonstrate a possible new Verilator feature, it can also be
+tested against the WIP branch of Verilator found here:
+https://github.com/toddstrader/verilator-dev/tree/dpi-compile
+
+Either run this to test with a Verilator simulation:
+
+```
+make VLT_PROT=1
+make run VLT_PROT=1
+```
+
+Or this to test with an XSim simulation:
+
+```
+make xsim VLT_PROT=1
+```
+
 ## See also
 
 There's been some discussion of this project here:
