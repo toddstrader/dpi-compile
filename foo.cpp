@@ -11,9 +11,28 @@
 // TODO -- this externs DPI functions, maybe don't do that here
 #include "Vfoo_tb__Dpi.h"
 
+#ifdef MODELSIM
+#include <map>
+#include <string>
+
+// ModelSim can't use the chandle in the always block
+// TODO -- make this a vector instead (faster but leakier)
+std::map<std::string, Vfoo_impl*> scopeMap;
+
+// TODO -- seems like this should just slow down other simulators, but XSim
+//         reports an exception from lookup_foo()
+void* lookup_foo (const char* scope) {
+    Vfoo_impl* foo = scopeMap.at(std::string(scope));
+    return foo;
+}
+#endif
+
 void* create_foo (const char* scope) {
     assert(sizeof(WData) == sizeof(svBitVecVal));
     Vfoo_impl* foo = new Vfoo_impl(scope);
+#ifdef MODELSIM
+    scopeMap[std::string(scope)] = foo;
+#endif
     return foo;
 }
 

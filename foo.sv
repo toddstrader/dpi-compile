@@ -17,6 +17,9 @@ module foo (
 );
 
     import "DPI-C" function chandle create_foo (string scope);
+`ifdef MODELSIM
+    import "DPI-C" function chandle lookup_foo (string scope);
+`endif
     import "DPI-C" function void eval_foo (
             chandle foo,
             bit [63:0] a,
@@ -36,8 +39,19 @@ module foo (
     end
 
     always @(*) begin
+`ifdef MODELSIM
+        automatic chandle ack = lookup_foo($sformatf("%m"));
+`endif
+
         // TODO -- try to understand clocks and be smarter here
-        eval_foo(foo, a, clk, long_in, long_out, x);
+        eval_foo(
+`ifdef MODELSIM
+    // TODO -- is this a ModelSim bug?  . . . file a ticket if so
+                ack,
+`else
+                foo,
+`endif
+                a, clk, long_in, long_out, x);
     end
 
     final final_foo(foo);

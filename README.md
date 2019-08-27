@@ -82,6 +82,20 @@ Or this to test with an XSim simulation:
 make xsim VLT_PROT=1
 ```
 
+ModelSim (32-bit Intel Starter Edition) doesn't work yet, but something like:
+
+```
+make msim M32="-m32 -D_GLIBCXX_USE_CXX11_ABI=0 -DMODELSIM" FOO_DEFS="+define+MODELSIM"
+```
+
+or this with a Verilator build with ModelSim's ancient compiler:
+
+```
+make msim M32="-m32 -DMODELSIM" FOO_DEFS="+define+MODELSIM"
+```
+
+is probably on the right track.
+
 ## See also
 
 There's been some discussion of this project here:

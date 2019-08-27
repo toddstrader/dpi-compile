@@ -18,13 +18,13 @@ dpi_prot_obj_dir/foo.cpp: foo_impl.sv
 
 # TODO -- either produce this from the previous verilator step or from the verilated Makefile
 dpi_hdr_obj_dir/Vfoo__Dpi.h: dpi_prot_obj_dir/foo.cpp
-	${VERILATOR_ROOT}/bin/verilator --cc dpi_prot_obj_dir/foo.sv -Mdir dpi_hdr_obj_dir
+	${VERILATOR_ROOT}/bin/verilator --cc dpi_prot_obj_dir/foo.sv -Mdir dpi_hdr_obj_dir ${FOO_DEFS}
 
 # TODO -- get rid of CXXFLAGS here
 dpi_prot_obj_dir/libfoo.so: dpi_hdr_obj_dir/Vfoo__Dpi.h
 	make -C dpi_prot_obj_dir/ -f Vfoo_impl.mk CXXFLAGS="-I../dpi_hdr_obj_dir"
 else
-VERILATOR_C_FLAGS= -I.  -MMD -I${VERILATOR_ROOT}/include -I${VERILATOR_ROOT}/include/vltstd -DVL_PRINTF=printf -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=1 -faligned-new -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow -fPIC
+VERILATOR_C_FLAGS= $(M32) -I.  -MMD -I${VERILATOR_ROOT}/include -I${VERILATOR_ROOT}/include/vltstd -DVL_PRINTF=printf -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=1 -faligned-new -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow -fPIC
 
 verilated.o: ${VERILATOR_ROOT}/include/verilated.cpp
 	${CXX} ${VERILATOR_C_FLAGS} -c -o $@ $<
@@ -39,7 +39,7 @@ verilated_vcd_c.o: ${VERILATOR_ROOT}/include/verilated_vcd_c.cpp
 libfoo.so: foo_impl.sv foo.cpp ${TB_OBJ_DIR}/Vfoo_tb.mk verilated.o verilated_dpi.o verilated_vcd_c.o
 	${VERILATOR_ROOT}/bin/verilator --cc foo_impl.sv -CFLAGS '-fPIC'
 	make -C obj_dir/ -f Vfoo_impl.mk
-	g++ -fPIC -shared foo.cpp -I ${TB_OBJ_DIR}/ -I obj_dir/ -I ${VERILATOR_ROOT}/include/ -I ${VERILATOR_ROOT}/include/vltstd/ obj_dir/Vfoo_impl__ALL.a -o libfoo.so verilated.o verilated_dpi.o verilated_vcd_c.o
+	${CXX} $(M32) -fPIC -shared foo.cpp -I ${TB_OBJ_DIR}/ -I obj_dir/ -I ${VERILATOR_ROOT}/include/ -I ${VERILATOR_ROOT}/include/vltstd/ obj_dir/Vfoo_impl__ALL.a -o libfoo.so verilated.o verilated_dpi.o verilated_vcd_c.o
 endif
 
 ${TB_OBJ_DIR}/Vfoo_tb.mk: ${LIB_DIR}foo.sv foo_tb.sv tb.cpp
@@ -54,6 +54,11 @@ xsim: ${LIB_DIR}libfoo.so
 	xvlog --sv foo_tb.sv ${LIB_DIR}foo.sv
 	xelab foo_tb --debug all --sv_lib ${LIB_DIR}libfoo --dpi_absolute
 	xsim work.foo_tb -t xsim.tcl
+
+msim: ${LIB_DIR}libfoo.so
+	vlib work
+	vlog -sv foo_tb.sv +define+MODELSIM ${LIB_DIR}foo.sv
+	vsim -c work.foo_tb -gblso ${LIB_DIR}libfoo.so -do "run -a; quit"
 
 run:
 	LD_LIBRARY_PATH=${PWD}/${LIB_DIR} ${TB_OBJ_DIR}/Vfoo_tb
