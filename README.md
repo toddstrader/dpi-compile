@@ -102,7 +102,8 @@ There's been some discussion of this project here:
 https://www.veripool.org/boards/3/topics/3037?r=3042#message-3042
 
 ## TODO
-- [ ] Add a mode to Verilator to only produce the DPI header
-- [ ] Have the Verilator Perl wrapper call bin/verilator again to create the DPI header when called with --dpi-protect
+- [x] Add a mode to Verilator to only produce the DPI header
+- [ ] Have the Verilator Perl wrapper call bin/verilator again to create the DPI header when called with --dpi-protect (or something)
 - [ ] Handle C++ ABI differences (maybe build multiple libraries?)
 - [ ] Wrap the Verilator runtime in a per-library namespace to avoid collisions
+- [ ] --dpi-protect propaganda in verilator --help
