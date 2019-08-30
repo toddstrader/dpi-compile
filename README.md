@@ -107,3 +107,4 @@ https://www.veripool.org/boards/3/topics/3037?r=3042#message-3042
 - [ ] Handle C++ ABI differences (maybe build multiple libraries?)
 - [ ] Wrap the Verilator runtime in a per-library namespace to avoid collisions
 - [ ] --dpi-protect propaganda in verilator --help
+- [ ] Explore overlap between --dpi-protect and a multi-threaded parent simulation (maybe all DPI calls need to exist in the same thread?)
