@@ -8,8 +8,7 @@
 //   generated from foo_impl.sv
 
 #include "Vfoo_impl.h"
-// TODO -- this externs DPI functions, maybe don't do that here
-#include "Vfoo_tb__Dpi.h"
+#include "svdpi.h"
 
 #ifdef MODELSIM
 #include <map>
@@ -18,6 +17,12 @@
 // ModelSim can't use the chandle in the always block
 // TODO -- make this a vector instead (faster but leakier)
 std::map<std::string, Vfoo_impl*> scopeMap;
+
+#endif
+
+extern "C" {
+
+#ifdef MODELSIM
 
 // TODO -- seems like this should just slow down other simulators, but XSim
 //         reports an exception from lookup_foo()
@@ -57,4 +62,6 @@ void final_foo (void* fooPtr) {
     Vfoo_impl* foo = static_cast<Vfoo_impl*>(fooPtr);
     foo->final();
     delete foo;
+}
+
 }
