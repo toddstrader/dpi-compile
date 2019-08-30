@@ -1,26 +1,26 @@
 # DPI protected Verilog proof of concept
 
-A non-broken and open source friendly way to distribute protected Verilog simulation models.
+A non-broken and open source friendly way to distribute sensitive Verilog simulation models.
 
 ## The basic idea
 
-Encrypted Verilog is unusable to open source tools like Verilator.  Beyond that, the Verilog
+Encrypted Verilog (i.e. `pragma protect) is unusable to open source tools like Verilator.  Beyond that, the Verilog
 encryption scheme is basically worthless.  See https://acmccs.github.io/papers/p1533-chhotarayA.pdf
 for futher details.  Or if you prefer more practical evidence, spend a little while researching
 actual attacks on encrypted RTL.
 
-This is a proof of concept for a utility which would use Verilator to compile a protected
+This is a proof of concept for a utility which would use Verilator to compile a sensitive
 Verilog module into a DPI-accessible shared object.  While the compiled object could be analyzed,
 this approach provides little to no opportunity for the plaintext Verilog to be exposed.
 
-Beyond compiling the protected module, the tool would do the following:
+Beyond compiling the sensitive module, the tool would do the following:
 * Create a black-box Verilog wrapper to be instantiated by the end user
 * Create a C++ wrapper for the library
 
 The black-box module will call imported DPI functions which the shared object will implement.
 Given this, the IP provider would deliver the black-box Verilog module and the compiled shared
 object to the end user.  The end user would then instantiate the black-box module and pass the
-shared object to the DPI-capable simulator of their choice.  The protected Verilog will not be
+shared object to the DPI-capable simulator of their choice.  The sensitive Verilog will not be
 visible to the end user, but they will be able to simulate it and observe the I/O.
 
 ## Things this doesn't attempt to solve
