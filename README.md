@@ -98,8 +98,8 @@ is probably on the right track.
 
 ## See also
 
-There's been some discussion of this project here:
-https://www.veripool.org/boards/3/topics/3037?r=3042#message-3042
+* https://www.veripool.org/boards/3/topics/3037?r=3042#message-3042
+* https://www.veripool.org/issues/1490-Verilator-Add-an-option-to-create-a-DPI-protected-library
 
 ## TODO
 - [x] Add a mode to Verilator to only produce the DPI header
