@@ -31,16 +31,29 @@ verilated_dpi.o: ${VERILATOR_ROOT}/include/verilated_dpi.cpp
 verilated_vcd_c.o: ${VERILATOR_ROOT}/include/verilated_vcd_c.cpp
 	${CXX} ${VERILATOR_C_FLAGS} -c -o $@ $<
 
-libfoo.so: foo_impl.sv foo.cpp ${TB_OBJ_DIR}/Vfoo_tb.mk verilated.o verilated_dpi.o verilated_vcd_c.o
+libfoo.so: foo_impl.sv foo.cpp verilated.o verilated_dpi.o verilated_vcd_c.o
 	${VERILATOR_ROOT}/bin/verilator --cc foo_impl.sv -CFLAGS '-fPIC'
 	make -C obj_dir/ -f Vfoo_impl.mk
-	${CXX} $(M32) -fPIC -shared foo.cpp -I ${TB_OBJ_DIR}/ -I obj_dir/ -I ${VERILATOR_ROOT}/include/ -I ${VERILATOR_ROOT}/include/vltstd/ obj_dir/Vfoo_impl__ALL.a -o libfoo.so verilated.o verilated_dpi.o verilated_vcd_c.o
+	${CXX} $(M32) -fPIC -shared foo.cpp -I obj_dir/ -I ${VERILATOR_ROOT}/include/ -I ${VERILATOR_ROOT}/include/vltstd/ obj_dir/Vfoo_impl__ALL.a -o libfoo.so verilated.o verilated_dpi.o verilated_vcd_c.o
+
+libfoo.a: foo_impl.sv foo.cpp verilated.o verilated_dpi.o verilated_vcd_c.o
+	${VERILATOR_ROOT}/bin/verilator --cc foo_impl.sv -Mdir static_obj_dir
+	make -C static_obj_dir/ -f Vfoo_impl.mk
+	${CXX} $(M32) foo.cpp -I static_obj_dir/ -I ${VERILATOR_ROOT}/include/ -I ${VERILATOR_ROOT}/include/vltstd/ -c -o libfoo.o
+	ar rc $@ verilated.o verilated_dpi.o verilated_vcd_c.o static_obj_dir/Vfoo_impl__ALLcls.o static_obj_dir/Vfoo_impl__ALLsup.o libfoo.o
 endif
 
 ${TB_OBJ_DIR}/Vfoo_tb.mk: ${LIB_DIR}foo.sv foo_tb.sv tb.cpp
 	${VERILATOR_ROOT}/bin/verilator --trace --exe $^ --top-module foo_tb --Mdir ${TB_OBJ_DIR} --cc
 
-${TB_OBJ_DIR}/Vfoo_tb: ${LIB_DIR}libfoo.so ${TB_OBJ_DIR}/Vfoo_tb.mk
+ifdef VLT_DYN
+VLT_LIB=${LIB_DIR}libfoo.so
+LIB_PATH=LD_LIBRARY_PATH=${PWD}/${LIB_DIR}
+else
+VLT_LIB=${LIB_DIR}libfoo.a
+endif
+
+${TB_OBJ_DIR}/Vfoo_tb: ${VLT_LIB} ${TB_OBJ_DIR}/Vfoo_tb.mk
 	make -C ${TB_OBJ_DIR}/ -f Vfoo_tb.mk VM_USER_LDLIBS="-L ${PWD}/${LIB_DIR} -lfoo"
 
 .PHONY: clean run xsim
@@ -56,11 +69,12 @@ msim: ${LIB_DIR}libfoo.so
 	vsim -c work.foo_tb -gblso ${LIB_DIR}libfoo.so -do "run -a; quit"
 
 run:
-	LD_LIBRARY_PATH=${PWD}/${LIB_DIR} ${TB_OBJ_DIR}/Vfoo_tb
+	${LIB_PATH} ${TB_OBJ_DIR}/Vfoo_tb
 
 clean:
 	rm -rf *obj_dir
 	rm -f *.so
+	rm -f *.a
 	rm -f *.o
 	rm -f *.d
 	rm -f *.vcd
