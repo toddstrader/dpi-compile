@@ -16,13 +16,8 @@ ifdef VLT_PROT
 dpi_prot_obj_dir/foo.cpp: foo_impl.sv
 	${VERILATOR_ROOT}/bin/verilator --cc foo_impl.sv -Mdir dpi_prot_obj_dir --dpi-protect foo
 
-# TODO -- either produce this from the previous verilator step or from the verilated Makefile
-dpi_hdr_obj_dir/Vfoo__Dpi.h: dpi_prot_obj_dir/foo.cpp
-	${VERILATOR_ROOT}/bin/verilator --cc dpi_prot_obj_dir/foo.sv -Mdir dpi_hdr_obj_dir ${FOO_DEFS}
-
-# TODO -- get rid of CXXFLAGS here
-dpi_prot_obj_dir/libfoo.so: dpi_hdr_obj_dir/Vfoo__Dpi.h
-	make -C dpi_prot_obj_dir/ -f Vfoo_impl.mk CXXFLAGS="-I../dpi_hdr_obj_dir"
+dpi_prot_obj_dir/libfoo.so: dpi_prot_obj_dir/foo.cpp
+	make -C dpi_prot_obj_dir/ -f Vfoo_impl.mk
 else
 VERILATOR_C_FLAGS= $(M32) -I.  -MMD -I${VERILATOR_ROOT}/include -I${VERILATOR_ROOT}/include/vltstd -DVL_PRINTF=printf -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=1 -faligned-new -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow -fPIC
 
