@@ -10,13 +10,21 @@ LIB_DIR=
 TB_OBJ_DIR=tb_obj_dir
 endif
 
+ifdef VLT_DYN
+VLT_LIB=${LIB_DIR}libfoo.so
+LIB_PATH=LD_LIBRARY_PATH=${PWD}/${LIB_DIR}
+VLT_FLAGS=--dpi-protect-shared
+else
+VLT_LIB=${LIB_DIR}libfoo.a
+endif
+
 default: ${TB_OBJ_DIR}/Vfoo_tb
 
 ifdef VLT_PROT
 dpi_prot_obj_dir/foo.cpp: foo_impl.sv
-	${VERILATOR_ROOT}/bin/verilator --cc foo_impl.sv -Mdir dpi_prot_obj_dir --dpi-protect foo
+	${VERILATOR_ROOT}/bin/verilator --cc foo_impl.sv -Mdir dpi_prot_obj_dir --dpi-protect foo ${VLT_FLAGS}
 
-dpi_prot_obj_dir/libfoo.so: dpi_prot_obj_dir/foo.cpp
+${VLT_LIB}: dpi_prot_obj_dir/foo.cpp
 	make -C dpi_prot_obj_dir/ -f Vfoo_impl.mk
 else
 VERILATOR_C_FLAGS= $(M32) -I.  -MMD -I${VERILATOR_ROOT}/include -I${VERILATOR_ROOT}/include/vltstd -DVL_PRINTF=printf -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=1 -faligned-new -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow -fPIC
@@ -45,13 +53,6 @@ endif
 
 ${TB_OBJ_DIR}/Vfoo_tb.mk: ${LIB_DIR}foo.sv foo_tb.sv tb.cpp
 	${VERILATOR_ROOT}/bin/verilator --trace --exe $^ --top-module foo_tb --Mdir ${TB_OBJ_DIR} --cc
-
-ifdef VLT_DYN
-VLT_LIB=${LIB_DIR}libfoo.so
-LIB_PATH=LD_LIBRARY_PATH=${PWD}/${LIB_DIR}
-else
-VLT_LIB=${LIB_DIR}libfoo.a
-endif
 
 ${TB_OBJ_DIR}/Vfoo_tb: ${VLT_LIB} ${TB_OBJ_DIR}/Vfoo_tb.mk
 	make -C ${TB_OBJ_DIR}/ -f Vfoo_tb.mk VM_USER_LDLIBS="-L ${PWD}/${LIB_DIR} -lfoo"
