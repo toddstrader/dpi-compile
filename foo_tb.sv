@@ -3,24 +3,33 @@
 // Example testbench module
 
 module foo_tb (
-    input [63:0] a0, a1,
-    output [63:0] x0, x1,
     input clk
 );
+    integer cyc = 0;
 
-    logic [1:0] [63:0] a, x;
-    logic [128:0] long_in;
-
-    assign a[0] = a0;
-    assign a[1] = a1;
-    assign x0 = x[0];
-    assign x1 = x[1];
-    assign long_in = {1'b0, {2{a0}}};
+    always_ff @(posedge clk) begin
+        cyc <= cyc + 1;
+        if (cyc == 4) begin
+            $write("done\n");
+            $finish;
+        end
+    end
 
     genvar i;
     generate
         for (i = 0; i < 2; i = i + 1) begin: gen_loop
-            foo foo_inst (.a (a[i]), .x (x[i]), .long_in, .long_out (), .clk (clk));
+            logic [63:0] a, x;
+            logic [128:0] long_in, long_out;
+
+            assign long_in = {1'b0, {2{a}}};
+
+            foo foo_inst (.a, .x, .long_in, .long_out, .clk);
+
+            always_ff @(posedge clk) begin
+                $display("[%0d] a=%0d x=%0d", i, a, x);
+                a <= a + 10;
+                if (cyc == 0) a <= (64'(i)+1)*5;
+            end
         end
     endgenerate
 

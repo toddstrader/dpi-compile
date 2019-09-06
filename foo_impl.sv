@@ -14,8 +14,10 @@ module foo_impl (
     wire [63:0] next_accum = accum_q + a + 1'b1;
 
     always_ff @(posedge(clk)) begin
-        accum_q <= next_accum;
-        $display("%m: next_accum = %0d", next_accum);
+        //accum_q <= next_accum;
+        //$display("%m: next_accum = %0d", next_accum);
+        $display("%m: clk=%0d a=%0d x=%0d", clk, a, x);
+        accum_q <= accum_q + a + 1'b1;
     end
 
     assign x = accum_q;

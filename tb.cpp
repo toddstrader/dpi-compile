@@ -22,17 +22,9 @@ int main() {
     tfp.open("foo.vcd");
     tfp.dump(main_time++);
     foo_tb.clk = 0;
-
-    foo_tb.a0 = 5;
-    foo_tb.a1 = 35;
-    advance_time(&foo_tb, &tfp);
-    advance_time(&foo_tb, &tfp);
-    foo_tb.clk = 0;
-    foo_tb.a0 = 1;
-    foo_tb.a1 = 3;
-    advance_time(&foo_tb, &tfp);
-    advance_time(&foo_tb, &tfp);
-    advance_time(&foo_tb, &tfp);
+    while (!Verilated::gotFinish()) {
+        advance_time(&foo_tb, &tfp);
+    }
 
     foo_tb.final();
     return 0;

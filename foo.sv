@@ -38,7 +38,9 @@ module foo (
         foo = create_foo(scope);
     end
 
-    always @(*) begin
+    // TODO -- split off clocked outputs
+    logic [63:0] x_garbage;
+    always @(a, long_in) begin
 `ifdef MODELSIM
         automatic chandle ack = lookup_foo($sformatf("%m"));
 `endif
@@ -51,7 +53,25 @@ module foo (
 `else
                 foo,
 `endif
-                a, clk, long_in, long_out, x);
+                a, clk, long_in, long_out, x_garbage);
+    end
+
+    logic [63:0] x_tmp;
+    always @(edge(clk)) begin
+`ifdef MODELSIM
+        automatic chandle ack = lookup_foo($sformatf("%m"));
+`endif
+
+        // TODO -- try to understand clocks and be smarter here
+        eval_foo(
+`ifdef MODELSIM
+    // TODO -- is this a ModelSim bug?  . . . file a ticket if so
+                ack,
+`else
+                foo,
+`endif
+                a, clk, long_in, long_out, x_tmp);
+        x <= x_tmp;
     end
 
     final final_foo(foo);
