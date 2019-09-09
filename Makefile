@@ -20,6 +20,12 @@ endif
 
 default: ${TB_OBJ_DIR}/Vfoo_tb
 
+foo_hack.o: foo_hack.cpp
+	g++ -I${VERILATOR_ROOT}/include/vltstd -c -o $@ $<
+
+libfoo_hack.a: foo_hack.o
+	ar rc $@ $<
+
 ifdef VLT_PROT
 dpi_prot_obj_dir/foo.cpp: foo_impl.sv
 	${VERILATOR_ROOT}/bin/verilator --cc foo_impl.sv -Mdir dpi_prot_obj_dir --dpi-protect foo ${VLT_FLAGS}

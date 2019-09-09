@@ -15,10 +15,13 @@ module foo_tb (
         end
     end
 
+    localparam X = 2;
+
     genvar i;
     generate
-        for (i = 0; i < 2; i = i + 1) begin: gen_loop
-            logic [63:0] a, x;
+        for (i = 0; i < X; i = i + 1) begin: gen_loop
+            logic [63:0] a = 0;
+            logic [63:0] x;
             logic [128:0] long_in, long_out;
 
             assign long_in = {1'b0, {2{a}}};
@@ -26,7 +29,7 @@ module foo_tb (
             foo foo_inst (.a, .x, .long_in, .long_out, .clk);
 
             always_ff @(posedge clk) begin
-                $display("[%0d] a=%0d x=%0d", i, a, x);
+                $display("tb[%0d]: (%0t) cyc=%0d a=%0d x=%0d", i, $time, cyc, a, x);
                 a <= a + 10;
                 if (cyc == 0) a <= (64'(i)+1)*5;
             end

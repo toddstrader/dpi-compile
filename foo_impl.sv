@@ -16,7 +16,7 @@ module foo_impl (
     always_ff @(posedge(clk)) begin
         //accum_q <= next_accum;
         //$display("%m: next_accum = %0d", next_accum);
-        $display("%m: clk=%0d a=%0d x=%0d", clk, a, x);
+        //$display("secret: clk=%0d a=%0d x=%0d", clk, a, x);
         accum_q <= accum_q + a + 1'b1;
     end
 

@@ -41,10 +41,9 @@ void* create_foo (const char* scope) {
     return foo;
 }
 
-void eval_foo (
+void comb_update_foo (
     void* fooPtr,
     const svBitVecVal* a,
-    unsigned char clk,
     const svBitVecVal* long_in,
     svBitVecVal* long_out,
     svBitVecVal* x)
@@ -52,11 +51,30 @@ void eval_foo (
     Vfoo_impl* foo = static_cast<Vfoo_impl*>(fooPtr);
     memcpy(&foo->a, a, 2*sizeof(svBitVecVal));
     memcpy(foo->long_in, long_in, 5*sizeof(svBitVecVal));
+    foo->eval();
+    memcpy(x, &foo->x, 2*sizeof(svBitVecVal));
+    memcpy(long_out, foo->long_out, 5*sizeof(svBitVecVal));
+}
+
+void seq_update_foo (
+    void* fooPtr,
+    unsigned char clk,
+    svBitVecVal* long_out,
+    svBitVecVal* x)
+{
+    Vfoo_impl* foo = static_cast<Vfoo_impl*>(fooPtr);
     foo->clk = clk;
     foo->eval();
     memcpy(x, &foo->x, 2*sizeof(svBitVecVal));
     memcpy(long_out, foo->long_out, 5*sizeof(svBitVecVal));
 }
+
+void comb_ignore_foo (
+    void* fooPtr,
+    const svBitVecVal* a,
+    const svBitVecVal* long_in
+)
+{ }
 
 void final_foo (void* fooPtr) {
     Vfoo_impl* foo = static_cast<Vfoo_impl*>(fooPtr);
